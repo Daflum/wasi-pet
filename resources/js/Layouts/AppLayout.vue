@@ -19,7 +19,7 @@ const page = usePage();
                 </Link>
 
                 <div v-if="$page.props.auth.user">
-                    <Link :href="route('dashboard')" as="div" class="v-list-item--link">
+                    <Link :href="route('admin.dashboard')" as="div" class="v-list-item--link">
                         <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard"></v-list-item>
                     </Link>
                      <Link :href="route('logout')" method="post" as="div" class="v-list-item--link">

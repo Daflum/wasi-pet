@@ -25,7 +25,7 @@ const page = usePage();
                 <v-divider class="my-2"></v-divider>
 
                 <div v-if="$page.props.auth.user">
-                    <Link :href="route('dashboard')" as="div" class="v-list-item--link">
+                    <Link :href="route('admin.dashboard')" as="div" class="v-list-item--link">
                         <v-list-item prepend-icon="mdi-view-dashboard" title="Mi Cuenta"></v-list-item>
                     </Link>
                 </div>
@@ -59,7 +59,7 @@ const page = usePage();
                 <v-divider vertical class="mx-2 my-auto" style="height: 24px"></v-divider>
 
                 <template v-if="$page.props.auth.user">
-                    <Link :href="route('dashboard')" as="div">
+                    <Link :href="route('admin.dashboard')" as="div">
                         <v-btn variant="tonal" prepend-icon="mdi-account">Mi Cuenta</v-btn>
                     </Link>
                 </template>
