@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdoptionRequestController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -20,7 +21,8 @@ Route::get('/dogs', function () {
 })->name('dogs.index');
 
 Route::get('/donar', [DonationController::class, 'index'])->name('donations.index');
-Route::post('/donar', [DonationController::class, 'store'])->name('donations.store')->middleware('auth');
+Route::post('/adoption-requests', [AdoptionRequestController::class, 'store'])->name('adoption-requests.store');
+Route::post('/donar', [DonationController::class, 'store'])->name('donations.store');
 
 // --- ADMIN / PROTECTED ROUTES ---
 

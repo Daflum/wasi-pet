@@ -77,6 +77,17 @@ Follow **Material Design 3** guidelines via Vuetify defaults.
 * **Tables:** Use `<v-data-table>` for lists.
 * **Feedback:** Use `<v-snackbar>` or `<v-alert>` for messages.
 
+### 7.3. Responsive Design & Layout (MANDATORY)
+* **Mobile-First Strategy:** Always design for mobile screens first (`xs`), then scale up.
+* **Grid System:** NEVER use fixed widths (e.g., `width: 500px`) for main layout containers. ALWAYS use Vuetify's Grid System:
+    * **Bad:** `<div style="width: 50%">`
+    * **Good:** `<v-col cols="12" md="6" lg="4">`
+    * *Explanation:* This implies 100% width on mobile (`cols="12"`) and 50% on desktop (`md="6"`).
+* **Navigation:**
+    * Use `<v-navigation-drawer temporary>` or `location="bottom"` for mobile menus if complex.
+    * Use display helpers (e.g., `class="d-none d-md-flex"`) to hide non-essential elements on small screens.
+* **Typography:** Use responsive text classes if headers are too large for mobile (e.g., `text-h4 text-md-h2`).
+
 ## 8. Iterative Development
 
 * **Blueprint:** Maintain a `blueprint.md` to track progress.

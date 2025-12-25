@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('donations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->decimal('amount', 10, 2);
             $table->string('payment_method')->nullable();
             $table->text('message')->nullable();
+            $table->string('proof_path')->nullable();
+            $table->string('guest_contact')->nullable();
             $table->timestamps();
         });
     }

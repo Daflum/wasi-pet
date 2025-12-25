@@ -23,12 +23,18 @@ class DonationController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'amount' => 'required|numeric|min:1',
             'payment_method' => 'required|string',
             'message' => 'nullable|string',
-            'proof' => 'required|file|image|max:2048', // 2MB max
-        ]);
+            'proof' => 'required|file|image|max:2048',
+        ];
+
+        if (!Auth::check()) {
+            $rules['guest_contact'] = 'required|string|max:255';
+        }
+
+        $request->validate($rules);
 
         $path = null;
         if ($request->hasFile('proof')) {
@@ -41,6 +47,7 @@ class DonationController extends Controller
             'payment_method' => $request->payment_method,
             'message' => $request->message,
             'proof_path' => $path,
+            'guest_contact' => $request->guest_contact,
         ]);
 
         return redirect()->route('donations.index')->with('success', 'Donación registrada correctamente. ¡Gracias!');

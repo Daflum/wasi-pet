@@ -3,8 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AdoptionRequest extends Model
 {
-    //
+    protected $fillable = [
+        'user_id',
+        'dog_id',
+        'message',
+        'status',
+        'guest_name',
+        'guest_phone',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function dog(): BelongsTo
+    {
+        return $this->belongsTo(Dog::class);
+    }
 }

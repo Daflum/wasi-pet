@@ -13,6 +13,7 @@ class Donation extends Model
         'payment_method',
         'message',
         'proof_path',
+        'guest_contact',
     ];
 
     public function user(): BelongsTo

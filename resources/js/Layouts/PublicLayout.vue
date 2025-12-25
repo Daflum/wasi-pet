@@ -22,13 +22,6 @@ const page = usePage();
                     <v-list-item prepend-icon="mdi-heart" title="Donar"></v-list-item>
                 </Link>
 
-                <v-divider class="my-2"></v-divider>
-
-                <div v-if="$page.props.auth.user">
-                    <Link :href="route('admin.dashboard')" as="div" class="v-list-item--link">
-                        <v-list-item prepend-icon="mdi-view-dashboard" title="Mi Cuenta"></v-list-item>
-                    </Link>
-                </div>
                 <!-- Login hidden from public menu -->
             </v-list>
         </v-navigation-drawer>
@@ -56,13 +49,6 @@ const page = usePage();
                     <v-btn variant="text">Donar</v-btn>
                 </Link>
 
-                <v-divider vertical class="mx-2 my-auto" style="height: 24px"></v-divider>
-
-                <template v-if="$page.props.auth.user">
-                    <Link :href="route('admin.dashboard')" as="div">
-                        <v-btn variant="tonal" prepend-icon="mdi-account">Mi Cuenta</v-btn>
-                    </Link>
-                </template>
                 <!-- Login hidden from public menu -->
             </div>
         </v-app-bar>
@@ -78,6 +64,9 @@ const page = usePage();
             </div>
             <div class="pt-2">
                 © {{ new Date().getFullYear() }} WasiPet - Adra Uni
+            </div>
+            <div class="pt-2">
+                <a href="/admin" class="text-grey text-decoration-none text-caption">Admin</a>
             </div>
         </v-footer>
     </v-app>
