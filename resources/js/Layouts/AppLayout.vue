@@ -22,17 +22,11 @@ const page = usePage();
                     <Link :href="route('admin.dashboard')" as="div" class="v-list-item--link">
                         <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard"></v-list-item>
                     </Link>
+                    <Link :href="route('admin.profile.edit')" as="div" class="v-list-item--link">
+                        <v-list-item prepend-icon="mdi-account" title="Perfil"></v-list-item>
+                    </Link>
                      <Link :href="route('logout')" method="post" as="div" class="v-list-item--link">
                         <v-list-item prepend-icon="mdi-logout" title="Cerrar Sesión"></v-list-item>
-                    </Link>
-                </div>
-
-                <div v-else>
-                    <Link :href="route('login')" as="div" class="v-list-item--link">
-                        <v-list-item prepend-icon="mdi-login" title="Iniciar Sesión"></v-list-item>
-                    </Link>
-                    <Link :href="route('register')" as="div" class="v-list-item--link">
-                        <v-list-item prepend-icon="mdi-account-plus" title="Registrarse"></v-list-item>
                     </Link>
                 </div>
 
