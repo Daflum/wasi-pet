@@ -29,14 +29,7 @@ const page = usePage();
                         <v-list-item prepend-icon="mdi-view-dashboard" title="Mi Cuenta"></v-list-item>
                     </Link>
                 </div>
-                <div v-else>
-                    <Link :href="route('login')" as="div" class="v-list-item--link">
-                        <v-list-item prepend-icon="mdi-login" title="Iniciar Sesión"></v-list-item>
-                    </Link>
-                    <Link :href="route('register')" as="div" class="v-list-item--link">
-                        <v-list-item prepend-icon="mdi-account-plus" title="Registrarse"></v-list-item>
-                    </Link>
-                </div>
+                <!-- Login hidden from public menu -->
             </v-list>
         </v-navigation-drawer>
 
@@ -70,14 +63,7 @@ const page = usePage();
                         <v-btn variant="tonal" prepend-icon="mdi-account">Mi Cuenta</v-btn>
                     </Link>
                 </template>
-                <template v-else>
-                    <Link :href="route('login')" as="div">
-                        <v-btn variant="text">Ingresar</v-btn>
-                    </Link>
-                    <Link :href="route('register')" as="div">
-                        <v-btn variant="outlined" class="ml-2">Registrarse</v-btn>
-                    </Link>
-                </template>
+                <!-- Login hidden from public menu -->
             </div>
         </v-app-bar>
 
