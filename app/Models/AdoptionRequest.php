@@ -9,7 +9,7 @@ class AdoptionRequest extends Model
 {
     protected $fillable = [
         'user_id',
-        'dog_id',
+        'pet_id',
         'message',
         'status',
         'guest_name',
@@ -21,8 +21,8 @@ class AdoptionRequest extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function dog(): BelongsTo
+    public function pet(): BelongsTo
     {
-        return $this->belongsTo(Dog::class);
+        return $this->belongsTo(Pet::class);
     }
 }

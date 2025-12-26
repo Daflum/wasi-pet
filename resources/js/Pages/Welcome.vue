@@ -19,9 +19,9 @@ import PublicLayout from '@/Layouts/PublicLayout.vue';
                     <p class="text-h5 mb-6 font-weight-light">
                         Dale una segunda oportunidad a un amigo fiel.
                     </p>
-                    <Link href="/dogs" as="div">
+                    <Link href="/mascotas" as="div">
                         <v-btn size="x-large" color="teal-lighten-1" elevation="4" prepend-icon="mdi-paw">
-                            Ver Perros
+                            Ver Mascotas
                         </v-btn>
                     </Link>
                 </div>

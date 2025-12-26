@@ -15,10 +15,10 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('/dogs', function () {
-    // Placeholder. In future: [DogController::class, 'index']
+Route::get('/mascotas', function () {
+    // Placeholder. In future: [PetController::class, 'index']
     return Inertia::render('Welcome');
-})->name('dogs.index');
+})->name('pets.index');
 
 Route::get('/donar', [DonationController::class, 'index'])->name('donations.index');
 Route::post('/adoption-requests', [AdoptionRequestController::class, 'store'])->name('adoption-requests.store');

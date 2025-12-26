@@ -14,9 +14,9 @@ const page = usePage();
                 <Link href="/" as="div" class="v-list-item--link">
                     <v-list-item prepend-icon="mdi-home" title="Inicio"></v-list-item>
                 </Link>
-                <!-- Placeholder for Dogs route -->
-                <Link href="/dogs" as="div" class="v-list-item--link">
-                    <v-list-item prepend-icon="mdi-dog" title="Ver Perros"></v-list-item>
+                <!-- Placeholder for Pets route -->
+                <Link href="/mascotas" as="div" class="v-list-item--link">
+                    <v-list-item prepend-icon="mdi-paw" title="Ver Mascotas"></v-list-item>
                 </Link>
                  <Link href="/donar" as="div" class="v-list-item--link">
                     <v-list-item prepend-icon="mdi-heart" title="Donar"></v-list-item>
@@ -42,8 +42,8 @@ const page = usePage();
                 <Link href="/" as="div">
                     <v-btn variant="text">Inicio</v-btn>
                 </Link>
-                <Link href="/dogs" as="div">
-                    <v-btn variant="text">Perros</v-btn>
+                <Link href="/mascotas" as="div">
+                    <v-btn variant="text">Mascotas</v-btn>
                 </Link>
                 <Link href="/donar" as="div">
                     <v-btn variant="text">Donar</v-btn>
