@@ -49,22 +49,12 @@ const submit = () => {
                                 v-model="form.type"
                                 :items="[
                                     { title: 'Perro', value: 'dog' },
-                                    { title: 'Gato', value: 'cat' },
-                                    { title: 'Otro', value: 'other' }
+                                    { title: 'Gato', value: 'cat' }
                                 ]"
                                 label="Especie"
                                 :error-messages="form.errors.type"
                                 required
                             ></v-select>
-                        </v-col>
-
-                        <v-col cols="12" md="6">
-                            <v-text-field
-                                v-model="form.breed"
-                                label="Raza"
-                                :error-messages="form.errors.breed"
-                                required
-                            ></v-text-field>
                         </v-col>
 
                         <v-col cols="12" md="6">
@@ -80,7 +70,11 @@ const submit = () => {
                         <v-col cols="12" md="6">
                             <v-select
                                 v-model="form.size"
-                                :items="['Small', 'Medium', 'Large']"
+                                :items="[
+                                    { title: 'Pequeño', value: 'Pequeño' },
+                                    { title: 'Mediano', value: 'Mediano' },
+                                    { title: 'Grande', value: 'Grande' }
+                                ]"
                                 label="Tamaño"
                                 :error-messages="form.errors.size"
                             ></v-select>

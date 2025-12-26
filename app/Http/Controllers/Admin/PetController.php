@@ -36,8 +36,8 @@ class PetController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:dog,cat,other',
-            'breed' => 'required|string|max:255',
+            'type' => 'required|in:dog,cat',
+            'breed' => 'nullable|string|max:255',
             'age' => 'required|integer|min:0',
             'size' => 'nullable|string',
             'description' => 'nullable|string',
@@ -91,8 +91,8 @@ class PetController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:dog,cat,other',
-            'breed' => 'required|string|max:255',
+            'type' => 'required|in:dog,cat',
+            'breed' => 'nullable|string|max:255',
             'age' => 'required|integer|min:0',
             'size' => 'nullable|string',
             'description' => 'nullable|string',
@@ -111,7 +111,7 @@ class PetController extends Controller
         $pet->update([
             'name' => $validated['name'],
             'type' => $validated['type'],
-            'breed' => $validated['breed'],
+            'breed' => $validated['breed'] ?? 'Mestizo',
             'age' => $validated['age'],
             'size' => $validated['size'],
             'description' => $validated['description'],

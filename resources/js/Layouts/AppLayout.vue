@@ -19,10 +19,20 @@ const page = usePage();
                 </Link>
 
                 <div v-if="$page.props.auth.user">
-                    <Link :href="route('admin.dashboard')" as="div" class="v-list-item--link">
+                    <Link :href="route('admin.dashboard')" class="v-list-item--link text-decoration-none text-high-emphasis">
                         <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard"></v-list-item>
                     </Link>
-                    <Link :href="route('admin.profile.edit')" as="div" class="v-list-item--link">
+                    <Link :href="route('admin.pets.index')" class="v-list-item--link text-decoration-none text-high-emphasis">
+                        <v-list-item prepend-icon="mdi-paw" title="Mascotas"></v-list-item>
+                    </Link>
+                    <!-- TODO: Requests Link -->
+                    <!-- <Link :href="route('admin.requests.index')" class="v-list-item--link text-decoration-none text-high-emphasis">
+                        <v-list-item prepend-icon="mdi-account-group" title="Solicitudes"></v-list-item>
+                    </Link> -->
+                    <Link :href="route('admin.donations.index')" class="v-list-item--link text-decoration-none text-high-emphasis">
+                        <v-list-item prepend-icon="mdi-cash" title="Donaciones"></v-list-item>
+                    </Link>
+                    <Link :href="route('admin.profile.edit')" class="v-list-item--link text-decoration-none text-high-emphasis">
                         <v-list-item prepend-icon="mdi-account" title="Perfil"></v-list-item>
                     </Link>
                      <Link :href="route('logout')" method="post" as="div" class="v-list-item--link">
