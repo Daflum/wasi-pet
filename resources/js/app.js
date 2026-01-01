@@ -11,7 +11,18 @@ import 'vuetify/styles';
 import { createVuetify } from 'vuetify';
 import '@mdi/font/css/materialdesignicons.css';
 
-const vuetify = createVuetify();
+const vuetify = createVuetify({
+    theme: {
+        themes: {
+            light: {
+                colors: {
+                    primary: '#741113', // Guinda UNI
+                    secondary: '#333333',
+                },
+            },
+        },
+    },
+});
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

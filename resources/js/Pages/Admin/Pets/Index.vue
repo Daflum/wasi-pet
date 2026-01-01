@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps({
@@ -8,17 +8,29 @@ defineProps({
 
 const form = useForm({});
 
-const deletePet = (id) => {
+const deletePet = (slug) => {
     if (confirm('¿Estás seguro de eliminar esta mascota?')) {
-        form.delete(route('admin.pets.destroy', id));
+        form.delete(route('admin.pets.destroy', slug));
     }
+};
+
+const updateStatus = (pet, newStatus) => {
+    const statusForm = useForm({ status: newStatus });
+    statusForm.patch(route('admin.pets.update-status', pet.slug), {
+        preserveScroll: true
+    });
+};
+
+const getStatusColor = (status) => {
+    const colors = { 'Disponible': 'success', 'Adoptado': 'info', 'En Proceso': 'warning' };
+    return colors[status] || 'grey';
 };
 </script>
 
 <template>
     <Head title="Gestión de Mascotas" />
 
-    <AppLayout>
+    <AdminLayout>
         <v-container>
             <div class="d-flex justify-space-between align-center mb-6">
                 <h1 class="text-h4">Mascotas</h1>
@@ -34,7 +46,6 @@ const deletePet = (id) => {
                         { title: 'Imagen', key: 'image', sortable: false },
                         { title: 'Nombre', key: 'name' },
                         { title: 'Especie', key: 'type' },
-                        { title: 'Raza', key: 'breed' },
                         { title: 'Estado', key: 'status' },
                         { title: 'Acciones', key: 'actions', sortable: false, align: 'end' },
                     ]"
@@ -42,7 +53,7 @@ const deletePet = (id) => {
                     <template v-slot:item.image="{ item }">
                         <v-avatar size="48" rounded="0" class="my-2">
                             <v-img
-                                :src="item.image ? `/storage/${item.image}` : 'https://via.placeholder.com/150'"
+                                :src="item.image"
                                 cover
                             ></v-img>
                         </v-avatar>
@@ -55,16 +66,35 @@ const deletePet = (id) => {
                     </template>
 
                     <template v-slot:item.status="{ item }">
-                        <v-chip
-                            :color="item.status === 'available' ? 'success' : (item.status === 'adopted' ? 'info' : 'warning')"
-                            size="small"
-                        >
-                            {{ item.status === 'available' ? 'En Adopción' : (item.status === 'adopted' ? 'Adoptado' : 'Tratamiento') }}
-                        </v-chip>
+                        <v-menu>
+                          <template v-slot:activator="{ props }">
+                            <v-chip
+                                v-bind="props"
+                                :color="getStatusColor(item.status)"
+                                size="small"
+                                link
+                                label
+                                append-icon="mdi-chevron-down"
+                            >
+                                {{ item.status }}
+                            </v-chip>
+                          </template>
+                          <v-list density="compact">
+                            <v-list-item @click="updateStatus(item, 'Disponible')" title="Disponible" value="Disponible">
+                                <template v-slot:prepend><v-icon color="success" icon="mdi-check-circle" size="small"></v-icon></template>
+                            </v-list-item>
+                            <v-list-item @click="updateStatus(item, 'En Proceso')" title="En Proceso" value="En Proceso">
+                                <template v-slot:prepend><v-icon color="warning" icon="mdi-progress-clock" size="small"></v-icon></template>
+                            </v-list-item>
+                             <v-list-item @click="updateStatus(item, 'Adoptado')" title="Adoptado" value="Adoptado">
+                                <template v-slot:prepend><v-icon color="info" icon="mdi-home-heart" size="small"></v-icon></template>
+                            </v-list-item>
+                          </v-list>
+                        </v-menu>
                     </template>
 
                     <template v-slot:item.actions="{ item }">
-                        <Link :href="route('admin.pets.edit', item.id)">
+                        <Link :href="route('admin.pets.edit', item.slug)">
                             <v-btn icon="mdi-pencil" variant="text" size="small" color="primary"></v-btn>
                         </Link>
                         <v-btn
@@ -72,11 +102,11 @@ const deletePet = (id) => {
                             variant="text"
                             size="small"
                             color="error"
-                            @click="deletePet(item.id)"
+                            @click="deletePet(item.slug)"
                         ></v-btn>
                     </template>
                 </v-data-table>
             </v-card>
         </v-container>
-    </AppLayout>
+    </AdminLayout>
 </template>

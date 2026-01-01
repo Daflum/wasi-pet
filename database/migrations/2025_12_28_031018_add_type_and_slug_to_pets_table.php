@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::rename('dogs', 'pets');
-
-        Schema::table('adoption_requests', function (Blueprint $table) {
-            $table->renameColumn('dog_id', 'pet_id');
-        });
-
         Schema::table('pets', function (Blueprint $table) {
-            $table->string('type')->default('dog')->after('id');
+            $table->string('type')->after('name')->default('dog');
+            $table->string('slug')->after('name')->unique()->nullable();
         });
     }
 
@@ -29,12 +24,7 @@ return new class extends Migration
     {
         Schema::table('pets', function (Blueprint $table) {
             $table->dropColumn('type');
+            $table->dropColumn('slug');
         });
-
-        Schema::table('adoption_requests', function (Blueprint $table) {
-            $table->renameColumn('pet_id', 'dog_id');
-        });
-
-        Schema::rename('pets', 'dogs');
     }
 };

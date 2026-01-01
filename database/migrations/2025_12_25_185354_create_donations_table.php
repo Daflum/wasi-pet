@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('donations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
-            $table->decimal('amount', 10, 2);
-            $table->string('payment_method')->nullable();
-            $table->text('message')->nullable();
-            $table->string('proof_path')->nullable();
-            $table->string('guest_contact')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('pet_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('donor_name');
+            $table->decimal('amount', 8, 2);
+            $table->enum('payment_method', ['yape', 'plin', 'bcp']);
+            $table->string('proof_path');
+            $table->string('status')->default('Pendiente');
+            $table->text('admin_note')->nullable();
             $table->timestamps();
         });
     }

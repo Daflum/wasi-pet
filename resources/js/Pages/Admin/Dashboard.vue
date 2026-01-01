@@ -1,6 +1,6 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { Head, Link } from '@inertiajs/vue3';
 
 defineProps({
     totalPets: Number,
@@ -12,7 +12,7 @@ defineProps({
 <template>
     <Head title="Dashboard" />
 
-    <AppLayout>
+    <AdminLayout>
         <v-container>
             <h1 class="text-h4 mb-6">Dashboard Admin</h1>
 
@@ -27,7 +27,9 @@ defineProps({
                             {{ totalPets }}
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn variant="text" block>Gestionar Mascotas</v-btn>
+                            <Link :href="route('admin.pets.index')" as="div" class="w-100">
+                                <v-btn variant="text" block>Gestionar Mascotas</v-btn>
+                            </Link>
                         </v-card-actions>
                     </v-card>
                 </v-col>
@@ -42,7 +44,9 @@ defineProps({
                             {{ pendingRequests }}
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn variant="text" block>Ver Pendientes</v-btn>
+                            <Link :href="route('admin.adoption-requests.index')" as="div" class="w-100">
+                                <v-btn variant="text" block>Ver Pendientes</v-btn>
+                            </Link>
                         </v-card-actions>
                     </v-card>
                 </v-col>
@@ -57,11 +61,13 @@ defineProps({
                             {{ pendingDonations }}
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn variant="text" block>Revisar</v-btn>
+                            <Link :href="route('admin.donations.index')" as="div" class="w-100">
+                                <v-btn variant="text" block>Revisar</v-btn>
+                            </Link>
                         </v-card-actions>
                     </v-card>
                 </v-col>
             </v-row>
         </v-container>
-    </AppLayout>
+    </AdminLayout>
 </template>

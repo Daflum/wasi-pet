@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pet;
+use App\Http\Requests\Admin\SavePetRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class PetController extends Controller
 {
@@ -32,36 +33,9 @@ class PetController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SavePetRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:dog,cat',
-            'breed' => 'nullable|string|max:255',
-            'age' => 'required|integer|min:0',
-            'size' => 'nullable|string',
-            'description' => 'nullable|string',
-            'status' => 'required|in:available,adopted,treatment',
-            'image' => 'nullable|image|max:2048',
-        ]);
-
-        $path = null;
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('pets', 'public');
-        }
-
-        Pet::create([
-            ...$validated,
-            'image' => $path,
-            // Assuming slug is not in migration yet, but requested in plan.
-            // Plan says: "Nombre, Slug (auto-generado), Historia."
-            // Migration create_dogs_table: name, breed, age, size, description, image, status. No slug column.
-            // I should stick to existing columns or add migration if needed.
-            // The user plan says "Slug (auto-generado)". I should check if I missed adding slug column.
-            // Migration 2025_12_25_185352_create_dogs_table.php does not have slug.
-            // I will skip slug for now or add it if strict.
-            // Plan mentions "Historia" -> description column matches.
-        ]);
+        Pet::create($request->getValidatedData());
 
         return redirect()->route('admin.pets.index')->with('success', 'Mascota creada correctamente.');
     }
@@ -87,36 +61,15 @@ class PetController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Pet $pet)
+    public function update(SavePetRequest $request, Pet $pet)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|in:dog,cat',
-            'breed' => 'nullable|string|max:255',
-            'age' => 'required|integer|min:0',
-            'size' => 'nullable|string',
-            'description' => 'nullable|string',
-            'status' => 'required|in:available,adopted,treatment',
-            'image' => 'nullable|image|max:2048',
-        ]);
+        $validatedData = $request->getValidatedData();
 
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($pet->image) {
-                Storage::disk('public')->delete($pet->image);
-            }
-            $pet->image = $request->file('image')->store('pets', 'public');
+        if (!$request->hasFile('image')) {
+            $validatedData['image'] = $pet->image;
         }
 
-        $pet->update([
-            'name' => $validated['name'],
-            'type' => $validated['type'],
-            'breed' => $validated['breed'] ?? 'Mestizo',
-            'age' => $validated['age'],
-            'size' => $validated['size'],
-            'description' => $validated['description'],
-            'status' => $validated['status'],
-        ]);
+        $pet->update($validatedData);
 
         return redirect()->route('admin.pets.index')->with('success', 'Mascota actualizada correctamente.');
     }
@@ -126,11 +79,21 @@ class PetController extends Controller
      */
     public function destroy(Pet $pet)
     {
-        if ($pet->image) {
-            Storage::disk('public')->delete($pet->image);
+        if ($pet->image && Str::contains($pet->image, 'cloudinary')) {
+            $publicId = 'pets/' . basename(parse_url($pet->image, PHP_URL_PATH), '.' . pathinfo(parse_url($pet->image, PHP_URL_PATH), PATHINFO_EXTENSION));
+            Cloudinary::uploadApi()->destroy($publicId);
         }
+
         $pet->delete();
 
         return redirect()->route('admin.pets.index')->with('success', 'Mascota eliminada.');
+    }
+
+    public function updateStatus(Request $request, Pet $pet)
+    {
+        $request->validate(['status' => 'required|in:Disponible,En Proceso,Adoptado']);
+        $pet->update(['status' => $request->status]);
+
+        return back()->with('success', 'Estado actualizado correctamente.');
     }
 }

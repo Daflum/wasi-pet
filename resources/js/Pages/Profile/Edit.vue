@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
@@ -18,7 +18,7 @@ defineProps({
 <template>
     <Head title="Profile" />
 
-    <AppLayout>
+    <AdminLayout>
         <v-container>
             <h1 class="text-h4 mb-6">Perfil</h1>
 
@@ -51,5 +51,5 @@ defineProps({
                 </v-col>
             </v-row>
         </v-container>
-    </AppLayout>
+    </AdminLayout>
 </template>

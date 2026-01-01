@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('adoption_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
-            $table->string('guest_name')->nullable();
-            $table->string('guest_phone')->nullable();
-            $table->foreignId('dog_id')->constrained()->onDelete('cascade');
-            $table->text('message')->nullable();
-            $table->string('status')->default('pending'); // pending, approved, rejected
+            $table->foreignId('pet_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->string('dni');
+            $table->string('phone');
+            $table->string('address');
+            $table->string('status')->default('Pendiente');
             $table->timestamps();
         });
     }

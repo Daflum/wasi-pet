@@ -9,15 +9,22 @@ class Donation extends Model
 {
     protected $fillable = [
         'user_id',
+        'pet_id',
+        'donor_name',
         'amount',
         'payment_method',
-        'message',
         'proof_path',
-        'guest_contact',
+        'status',
+        'admin_note',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function pet(): BelongsTo
+    {
+        return $this->belongsTo(Pet::class);
     }
 }

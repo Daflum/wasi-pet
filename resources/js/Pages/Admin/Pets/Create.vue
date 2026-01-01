@@ -1,29 +1,27 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
     type: 'dog',
-    breed: '',
     age: '',
-    size: 'Medium',
+    size: 'Mediano',
     description: '',
-    status: 'available',
+    status: 'Disponible',
     image: null,
+    gender: 'Macho',
 });
 
 const submit = () => {
-    form.post(route('admin.pets.store'), {
-        forceFormData: true,
-    });
+    form.post(route('admin.pets.store'));
 };
 </script>
 
 <template>
     <Head title="Nueva Mascota" />
 
-    <AppLayout>
+    <AdminLayout>
         <v-container>
             <h1 class="text-h4 mb-6">Nueva Mascota</h1>
 
@@ -52,10 +50,11 @@ const submit = () => {
                             ></v-select>
                         </v-col>
 
+
                         <v-col cols="12" md="6">
                             <v-text-field
                                 v-model="form.age"
-                                label="Edad (Años/Meses aprox)"
+                                label="Edad (Años)"
                                 type="number"
                                 :error-messages="form.errors.age"
                                 required
@@ -65,24 +64,26 @@ const submit = () => {
                         <v-col cols="12" md="6">
                             <v-select
                                 v-model="form.size"
-                                :items="[
-                                    { title: 'Pequeño', value: 'Pequeño' },
-                                    { title: 'Mediano', value: 'Mediano' },
-                                    { title: 'Grande', value: 'Grande' }
-                                ]"
+                                :items="['Pequeño', 'Mediano', 'Grande']"
                                 label="Tamaño"
                                 :error-messages="form.errors.size"
                             ></v-select>
                         </v-col>
 
                         <v-col cols="12" md="6">
+                             <v-select
+                                v-model="form.gender"
+                                :items="['Macho', 'Hembra']"
+                                label="Género"
+                                :error-messages="form.errors.gender"
+                                required
+                            ></v-select>
+                        </v-col>
+
+                        <v-col cols="12" md="6">
                             <v-select
                                 v-model="form.status"
-                                :items="[
-                                    { title: 'En Adopción', value: 'available' },
-                                    { title: 'Adoptado', value: 'adopted' },
-                                    { title: 'En Tratamiento', value: 'treatment' }
-                                ]"
+                                :items="['Disponible', 'En Proceso', 'Adoptado']"
                                 label="Estado"
                                 :error-messages="form.errors.status"
                                 required
@@ -91,7 +92,6 @@ const submit = () => {
 
                         <v-col cols="12">
                             <v-file-input
-                                v-model="form.image"
                                 label="Foto"
                                 accept="image/*"
                                 prepend-icon="mdi-camera"
@@ -109,15 +109,10 @@ const submit = () => {
                             ></v-textarea>
                         </v-col>
 
-                        <v-col cols="12" class="d-flex justify-end gap-4">
-                            <v-btn
-                                color="grey-lighten-2"
-                                variant="flat"
-                                :href="route('admin.pets.index')"
-                                class="mr-4"
-                            >
-                                Cancelar
-                            </v-btn>
+                        <v-col cols="12" class="d-flex justify-end">
+                            <Link :href="route('admin.pets.index')" class="mr-4">
+                                <v-btn>Cancelar</v-btn>
+                            </Link>
                             <v-btn
                                 type="submit"
                                 color="primary"
@@ -130,5 +125,5 @@ const submit = () => {
                 </v-form>
             </v-card>
         </v-container>
-    </AppLayout>
+    </AdminLayout>
 </template>
