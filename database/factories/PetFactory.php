@@ -25,11 +25,11 @@ class PetFactory extends Factory
             'slug' => Str::slug($name),
             'type' => $type,
             'gender' => $this->faker->randomElement(['Macho', 'Hembra']),
-            'age' => $this->faker->numberBetween(1, 15),
+            'birth_date' => $this->faker->dateTimeBetween('-12 years', 'now'),
             'size' => $this->faker->randomElement(['Pequeño', 'Mediano', 'Grande']),
             'description' => $this->faker->paragraph,
             'status' => $this->faker->randomElement(['Disponible', 'En Proceso', 'Adoptado']),
-            'image' => 'https://placedog.net/500/500?random=' . $this->faker->unique()->randomNumber(),
+            'image' => 'https://loremflickr.com/600/400/' . $type . '?lock=' . $this->faker->unique()->randomNumber(),
         ];
     }
 }

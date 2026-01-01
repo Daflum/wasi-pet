@@ -82,8 +82,8 @@ const submit = async () => {
                             variant="flat"
                             class="mr-2"
                         >
-                            <v-icon :icon="pet.type === 'dog' ? 'mdi-dog' : 'mdi-cat'" start></v-icon>
-                            {{ pet.type === 'dog' ? 'Perro' : 'Gato' }}
+                            <v-icon :icon="pet.species_icon" start></v-icon>
+                            {{ pet.species_label }}
                         </v-chip>
                     </div>
 
@@ -91,7 +91,7 @@ const submit = async () => {
                         <v-card class="pa-3 text-center rounded-lg flex-grow-1" color="grey-lighten-4">
                              <v-icon icon="mdi-cake-variant" size="x-large" class="mb-1"></v-icon>
                             <div class="text-caption text-uppercase text-medium-emphasis">Edad</div>
-                            <div class="text-h6 font-weight-bold">{{ pet.age }} Años</div>
+                            <div class="text-h6 font-weight-bold">{{ pet.age_label }}</div>
                         </v-card>
                          <v-card class="pa-3 text-center rounded-lg flex-grow-1" color="grey-lighten-4">
                             <v-icon icon="mdi-ruler" size="x-large" class="mb-1"></v-icon>

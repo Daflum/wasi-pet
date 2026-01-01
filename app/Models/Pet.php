@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,12 +19,23 @@ class Pet extends Model
         'slug',
         'type',
         'gender',
-        'age',
+        'birth_date',
         'size',
         'description',
         'status',
         'image',
     ];
+
+    protected $casts = [
+        'birth_date' => 'date',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['age', 'age_label', 'species_label', 'species_icon'];
 
     protected static function boot()
     {
@@ -71,12 +83,30 @@ class Pet extends Model
     }
 
     /**
+     * Get the pet's age in years, calculated from birth_date.
+     */
+    protected function age(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => isset($attributes['birth_date'])
+                ? Carbon::parse($attributes['birth_date'])->age
+                : null,
+        );
+    }
+
+    /**
      * Get the age label attribute.
      */
     protected function ageLabel(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, array $attributes) => $attributes['age'] . ' Años',
+            get: function (mixed $value, array $attributes) {
+                if (!isset($attributes['birth_date'])) {
+                    return 'Edad desconocida';
+                }
+                $age = Carbon::parse($attributes['birth_date'])->age;
+                return $age . ' ' . ($age === 1 ? 'Año' : 'Años');
+            }
         );
     }
 
