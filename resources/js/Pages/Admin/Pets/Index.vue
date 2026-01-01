@@ -86,7 +86,12 @@ const getStatusColor = (status) => {
                             <v-list-item @click="updateStatus(item, 'En Proceso')" title="En Proceso" value="En Proceso">
                                 <template v-slot:prepend><v-icon color="warning" icon="mdi-progress-clock" size="small"></v-icon></template>
                             </v-list-item>
-                             <v-list-item @click="updateStatus(item, 'Adoptado')" title="Adoptado" value="Adoptado">
+                             <v-list-item
+                                 @click="updateStatus(item, 'Adoptado')"
+                                 title="Adoptado"
+                                 value="Adoptado"
+                                 :disabled="item.status === 'Disponible'"
+                             >
                                 <template v-slot:prepend><v-icon color="info" icon="mdi-home-heart" size="small"></v-icon></template>
                             </v-list-item>
                           </v-list>

@@ -2,7 +2,7 @@
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import SponsorshipModal from '@/Components/SponsorshipModal.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useDisplay } from 'vuetify';
 
 const props = defineProps({
@@ -17,8 +17,35 @@ const sponsorshipDialog = ref(false);
 const snackbar = ref(false);
 const formRef = ref(null);
 
+const statusChip = computed(() => {
+    switch (props.pet.status) {
+        case 'Disponible':
+            return { color: 'success', text: 'Disponible' };
+        case 'En Proceso':
+            return { color: 'warning', text: 'En Proceso' };
+        case 'Adoptado':
+            return { color: 'grey', text: 'Adoptado' };
+        default:
+            return { color: 'grey', text: 'Desconocido' };
+    }
+});
+
+const adoptionButton = computed(() => {
+    switch (props.pet.status) {
+        case 'Disponible':
+            return { text: '¡Quiero Adoptar!', disabled: false };
+        case 'En Proceso':
+            return { text: 'Unirme a la Lista de Espera', disabled: false };
+        case 'Adoptado':
+            return { text: 'Adoptado', disabled: true };
+        default:
+            return { text: 'No Disponible', disabled: true };
+    }
+});
+
 const rules = {
     required: v => !!v || 'Este campo es obligatorio.',
+    email: v => /.+@.+\..+/.test(v) || 'Debe ser un correo electrónico válido.',
     dni: v => (v && v.length === 8 && /^\d+$/.test(v)) || 'El DNI debe tener 8 dígitos numéricos.',
     phone: v => (v && v.length === 9 && /^\d+$/.test(v)) || 'El celular debe tener 9 dígitos numéricos.',
 };
@@ -26,6 +53,7 @@ const rules = {
 const form = useForm({
     pet_id: props.pet.id,
     name: '',
+    email: '',
     dni: '',
     phone: '',
     address: '',
@@ -78,12 +106,11 @@ const submit = async () => {
                     <div class="d-flex flex-column flex-sm-row align-start align-sm-center mb-4">
                         <h1 class="text-h3 font-weight-bold text-primary mr-4 mb-2 mb-sm-0">{{ pet.name }}</h1>
                         <v-chip
-                            :color="pet.type === 'dog' ? 'brown' : 'orange'"
+                            :color="statusChip.color"
                             variant="flat"
                             class="mr-2"
                         >
-                            <v-icon :icon="pet.species_icon" start></v-icon>
-                            {{ pet.species_label }}
+                            {{ statusChip.text }}
                         </v-chip>
                     </div>
 
@@ -110,6 +137,15 @@ const submit = async () => {
                         {{ pet.description || 'Esta mascota aún no tiene una historia descrita, pero está ansiosa por conocerte.' }}
                     </p>
 
+                    <v-alert
+                        v-if="pet.status === 'En Proceso'"
+                        type="warning"
+                        variant="tonal"
+                        class="mb-6"
+                        title="¡En Lista de Espera!"
+                        text="Esta mascota ya tiene un proceso de adopción en curso. Si continúas, entrarás en una lista de espera y te contactaremos si la adopción actual no se completa."
+                    ></v-alert>
+
                     <v-row>
                         <v-col cols="12" sm="6">
                             <v-btn
@@ -117,9 +153,10 @@ const submit = async () => {
                                 size="x-large"
                                 prepend-icon="mdi-home-heart"
                                 @click="dialog = true"
+                                :disabled="adoptionButton.disabled"
                                 block
                             >
-                                Quiero Adoptar
+                                {{ adoptionButton.text }}
                             </v-btn>
                         </v-col>
                         <v-col cols="12" sm="6">
@@ -156,6 +193,14 @@ const submit = async () => {
                                 variant="outlined"
                                 :rules="[rules.required]"
                                 :error-messages="form.errors.name"
+                            ></v-text-field>
+
+                            <v-text-field
+                                v-model="form.email"
+                                label="Correo Electrónico"
+                                variant="outlined"
+                                :rules="[rules.required, rules.email]"
+                                :error-messages="form.errors.email"
                             ></v-text-field>
 
                              <v-text-field

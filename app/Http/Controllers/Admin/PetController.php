@@ -63,13 +63,25 @@ class PetController extends Controller
      */
     public function update(SavePetRequest $request, Pet $pet)
     {
-        $validatedData = $request->getValidatedData();
+        $validatedData = $request->validated();
 
-        if (!$request->hasFile('image')) {
-            $validatedData['image'] = $pet->image;
+        // Intelligent Validation: Prevent manually setting status to 'Adoptado'
+        if ($validatedData['status'] === 'Adoptado' && $pet->status !== 'Adoptado') {
+            $errorMessage = $pet->status === 'Disponible'
+                ? 'Error: Una mascota "Disponible" no tiene solicitudes para aprobar.'
+                : 'No se puede marcar como "Adoptado" desde aquí. Por favor, apruebe la solicitud de adopción correspondiente.';
+
+            return back()->withErrors(['status' => $errorMessage])->withInput();
         }
 
-        $pet->update($validatedData);
+        // Use the custom method from the FormRequest to handle image uploads
+        $processedData = $request->getValidatedData();
+
+        if (!$request->hasFile('image')) {
+            $processedData['image'] = $pet->image;
+        }
+
+        $pet->update($processedData);
 
         return redirect()->route('admin.pets.index')->with('success', 'Mascota actualizada correctamente.');
     }
@@ -91,8 +103,18 @@ class PetController extends Controller
 
     public function updateStatus(Request $request, Pet $pet)
     {
-        $request->validate(['status' => 'required|in:Disponible,En Proceso,Adoptado']);
-        $pet->update(['status' => $request->status]);
+        $validated = $request->validate(['status' => 'required|in:Disponible,En Proceso,Adoptado']);
+
+        // Intelligent Validation: Prevent manually setting status to 'Adoptado'
+        if ($validated['status'] === 'Adoptado' && $pet->status !== 'Adoptado') {
+            $errorMessage = $pet->status === 'Disponible'
+                ? 'Error: Una mascota "Disponible" no tiene solicitudes para aprobar.'
+                : 'No se puede marcar como "Adoptado" manualmente. Por favor, apruebe la solicitud de adopción correspondiente.';
+
+            return back()->withErrors(['status' => $errorMessage]);
+        }
+
+        $pet->update(['status' => $validated['status']]);
 
         return back()->with('success', 'Estado actualizado correctamente.');
     }

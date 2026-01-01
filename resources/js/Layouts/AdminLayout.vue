@@ -1,8 +1,36 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 
 const drawer = ref(null);
+const snackbar = ref(false);
+const snackbarText = ref('');
+const snackbarColor = ref('info');
+
+const page = usePage();
+
+watch(() => page.props.flash, (flash) => {
+    if (flash && flash.success) {
+        snackbarText.value = flash.success;
+        snackbarColor.value = 'success';
+        snackbar.value = true;
+    }
+    if (flash && flash.error) {
+        snackbarText.value = flash.error;
+        snackbarColor.value = 'error';
+        snackbar.value = true;
+    }
+}, { deep: true });
+
+watch(() => page.props.errors, (errors) => {
+    const errorValues = Object.values(errors);
+    if (errorValues.length > 0) {
+        snackbarText.value = errorValues[0];
+        snackbarColor.value = 'error';
+        snackbar.value = true;
+    }
+}, { deep: true });
+
 </script>
 
 <template>
@@ -84,5 +112,19 @@ const drawer = ref(null);
         <slot />
       </v-container>
     </v-main>
+
+    <v-snackbar
+        v-model="snackbar"
+        :color="snackbarColor"
+        :timeout="5000"
+        location="top right"
+    >
+        {{ snackbarText }}
+        <template v-slot:actions>
+            <v-btn icon @click="snackbar = false">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+        </template>
+    </v-snackbar>
   </v-app>
 </template>

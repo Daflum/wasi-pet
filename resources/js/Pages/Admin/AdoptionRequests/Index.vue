@@ -1,6 +1,7 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
     adoption_requests: Object,
@@ -9,6 +10,22 @@ const props = defineProps({
 const form = useForm({
     status: '',
 });
+
+const dialog = ref(false);
+const selectedRequest = ref(null);
+
+const openConfirmationDialog = (request) => {
+    selectedRequest.value = request;
+    dialog.value = true;
+};
+
+const confirmUpdateStatus = () => {
+    if (selectedRequest.value) {
+        updateStatus(selectedRequest.value, 'Aprobado');
+    }
+    dialog.value = false;
+    selectedRequest.value = null;
+};
 
 const updateStatus = (request, newStatus) => {
     form.status = newStatus;
@@ -29,7 +46,7 @@ const generateWhatsAppLink = (request) => {
 };
 
 const getStatusColor = (status) => {
-    const colors = { 'Pendiente': 'warning', 'Aprobado': 'success', 'Rechazado': 'error' };
+    const colors = { 'Pendiente': 'warning', 'Aprobado': 'success', 'Rechazada': 'error', 'Cerrada': 'grey' };
     return colors[status] || 'grey';
 };
 </script>
@@ -71,7 +88,7 @@ const getStatusColor = (status) => {
                             <v-list-item @click="updateStatus(item, 'Pendiente')" title="Pendiente" value="Pendiente">
                                 <template v-slot:prepend><v-icon color="warning" icon="mdi-clock-outline" size="small"></v-icon></template>
                             </v-list-item>
-                            <v-list-item @click="updateStatus(item, 'Aprobado')" title="Aprobado" value="Aprobado">
+                            <v-list-item @click="openConfirmationDialog(item)" title="Aprobado" value="Aprobado">
                                 <template v-slot:prepend><v-icon color="success" icon="mdi-check-circle" size="small"></v-icon></template>
                             </v-list-item>
                              <v-list-item @click="updateStatus(item, 'Rechazado')" title="Rechazado" value="Rechazado">
@@ -94,6 +111,23 @@ const getStatusColor = (status) => {
                     </template>
                 </v-data-table>
             </v-card>
+
+            <!-- Confirmation Dialog -->
+            <v-dialog v-model="dialog" max-width="500">
+                <v-card>
+                    <v-card-title class="text-h5">Confirmar Aprobación</v-card-title>
+                    <v-card-text>
+                        ¿Estás seguro de que quieres aprobar esta solicitud para <strong>{{ selectedRequest?.name }}</strong>?
+                        Esta acción cambiará el estado de la mascota a "Adoptado" y notificará al resto de solicitantes.
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="dialog = false">Cancelar</v-btn>
+                        <v-btn color="primary" @click="confirmUpdateStatus">Sí, Aprobar Solicitud</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
         </v-container>
     </AdminLayout>
 </template>

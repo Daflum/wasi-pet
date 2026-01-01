@@ -66,10 +66,6 @@ class PetController extends Controller
     {
         $pet = Pet::where('slug', $slug)->firstOrFail();
 
-        if($pet->status === 'Adoptado') {
-            abort(404);
-        }
-
         return Inertia::render('Public/Pets/Show', [
             'pet' => $pet->toArray(),
             'settings' => Setting::all()->pluck('value', 'key'),
