@@ -107,8 +107,25 @@ Follow **Material Design 3** guidelines via Vuetify defaults.
 *   **`settings` Table:** For global, scalar values ONLY (e.g., social media links, contact phone number).
 *   **Dedicated Tables:** Lists of items (e.g., Pets, Banks, Donations) MUST have their own dedicated database tables.
 
+### 9.4. Auxiliary Tools (Digital Bingo Generator)
+* **Use Case:** Generation of individual Bingo cards as images for digital distribution (WhatsApp/Social Media).
+* **Output Format:** A **.ZIP file** containing individual **.PNG images**.
+* **Technical Implementation:**
+    * **Library:** Use `intervention/image` (v3) to overlay numbers onto a "Base Template" image.
+    * **Template:** The system must allow uploading a background image (1080x1920px vertical format recommended).
+    * **Storage Exception:** Unlike other assets, Bingo ZIPs are generated and stored **locally** in `storage/app/bingo-zips` and deleted immediately after download to avoid Cloudinary file size limits.
+* **Design Logic:**
+    * **Center Square:** The center square (index 12) MUST be left empty (`null`) to allow the background template's design (e.g., a logo or paw print) to show through.
+    * **Card Number:** The card sequence number (e.g., "Cartón N°: 101") is printed at the top center.
+    * **Template Guide:** The system provides a downloadable "Template Guide" PNG to help designers position elements correctly.
+* **Uniqueness Logic (Event Scoped):**
+    1. **Table:** Use `bingo_hashes` (`id`, `event_slug`, `card_hash`).
+    2. **Check:** Before generating, create the MD5 hash of the sorted numbers. Query DB: `WHERE event_slug = ? AND card_hash = ?`.
+    3. **Collision:** If exists, regenerate numbers. If unique, save hash and render image.
+
 ## 10. External Integrations
 
 ### 10.1. Cloudinary
 *   **Strategy:** ALL user-uploaded content (e.g., pet images) MUST be uploaded to Cloudinary.
 *   **Implementation:** The database stores the secure URL provided by Cloudinary. The application MUST NOT use local `public/storage` for dynamic or user-generated content. The logic for deleting assets from Cloudinary is handled in `Admin\PetController@destroy`.
+*   **Exception:** As noted in 9.4, temporary Bingo ZIP files are excluded from this rule.

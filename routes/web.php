@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BingoController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DonationController as AdminDonationController;
 use App\Http\Controllers\Admin\PetController as AdminPetController;
@@ -48,6 +49,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
     Route::resource('donations', AdminDonationController::class)->only(['index', 'update']);
     Route::resource('adoption-requests', \App\Http\Controllers\Admin\AdoptionRequestController::class)->only(['index', 'update']);
     Route::resource('payment-methods', \App\Http\Controllers\Admin\PaymentMethodController::class)->only(['store', 'update', 'destroy']);
+
+    // Bingo
+    Route::get('bingo/download/{filename}', [BingoController::class, 'download'])->name('bingo.download');
+    Route::get('bingo/template-guide', [BingoController::class, 'downloadTemplate'])->name('bingo.template-guide'); // Nueva ruta
+    Route::resource('bingo', BingoController::class)->only(['index', 'store']);
 
     // Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

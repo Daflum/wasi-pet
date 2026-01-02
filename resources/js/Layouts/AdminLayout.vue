@@ -69,6 +69,14 @@ watch(() => page.props.errors, (errors) => {
             <v-list-item-title>Solicitudes</v-list-item-title>
           </v-list-item>
         </Link>
+          <Link :href="route('admin.bingo.index')" as="div">
+              <v-list-item link :active="route().current('admin.bingo.*')">
+                  <template v-slot:prepend>
+                      <v-icon>mdi-ticket</v-icon>
+                  </template>
+                  <v-list-item-title>Bingo</v-list-item-title>
+              </v-list-item>
+          </Link>
         <Link :href="route('admin.settings.index')" as="div">
           <v-list-item link :active="route().current('admin.settings.*')">
               <template v-slot:prepend>
