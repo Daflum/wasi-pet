@@ -35,7 +35,7 @@ class Pet extends Model
      *
      * @var array
      */
-    protected $appends = ['age', 'age_label', 'species_label', 'species_icon'];
+    protected $appends = ['age', 'age_label', 'species_label', 'species_icon', 'size_label'];
 
     protected static function boot()
     {
@@ -75,9 +75,25 @@ class Pet extends Model
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => match ($attributes['type']) {
-                'dog' => 'mdi-dog',
-                'cat' => 'mdi-cat',
+                'dog' => 'mdi-bone', // Huesito para perros
+                'cat' => 'mdi-fish', // Pescadito para gatos
                 default => 'mdi-paw',
+            },
+        );
+    }
+
+    /**
+     * Get the size label attribute.
+     */
+    protected function sizeLabel(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => match ($attributes['size'] ?? null) {
+                'small' => 'Pequeño',
+                'medium' => 'Mediano',
+                'large' => 'Grande',
+                'extra_large' => 'Muy Grande',
+                default => 'Tamaño: ' . ($attributes['size'] ?? 'Desconocido'),
             },
         );
     }

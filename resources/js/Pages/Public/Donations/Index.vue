@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import PublicLayout from "@/Layouts/PublicLayout.vue";
 
@@ -15,8 +15,11 @@ const bankMethods = computed(() => {
     return props.paymentMethods.filter(method => method.qr_code_path === null);
 });
 
+const snackbar = ref(false);
+
 const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
+    snackbar.value = true;
 };
 
 const form = useForm({
@@ -27,7 +30,12 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('public.donations.store'));
+    form.post(route('public.donations.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset();
+        }
+    });
 };
 </script>
 
@@ -36,85 +44,200 @@ const submit = () => {
 
     <PublicLayout>
         <v-container>
-            <v-row>
-                <v-col cols="12" md="6">
-                    <v-card>
-                        <v-card-title>Canales de Donación</v-card-title>
-                        <v-card-text>
-                            <v-row>
-                                <v-col v-for="method in qrMethods" :key="method.id" cols="12" sm="6" class="text-center">
-                                    <v-card flat>
-                                        <v-card-title>{{ method.name }}</v-card-title>
-                                        <v-card-text>
-                                            <v-img :src="method.qr_code_path" :alt="method.name" class="mx-auto" max-width="150"></v-img>
-                                            <p class="mt-2">{{ method.instructions }}</p>
-                                            <p class="font-weight-bold">{{ method.account_number }}</p>
-                                        </v-card-text>
-                                    </v-card>
-                                </v-col>
-                            </v-row>
-                            <v-divider class="my-4"></v-divider>
-                            <v-list>
-                                <v-list-item v-for="method in bankMethods" :key="method.id">
-                                    <v-list-item-title>{{ method.name }}</v-list-item-title>
-                                    <v-list-item-subtitle>{{ method.instructions }}</v-list-item-subtitle>
-                                    <v-list-item-content>
-                                        <p>Cuenta: {{ method.account_number }}</p>
-                                        <p v-if="method.cci">CCI: {{ method.cci }}</p>
-                                    </v-list-item-content>
-                                    <template v-slot:append>
-                                        <v-btn icon @click="copyToClipboard(method.account_number)">
-                                            <v-icon>mdi-content-copy</v-icon>
-                                        </v-btn>
-                                    </template>
-                                </v-list-item>
+            <div class="text-center mb-10">
+                <h1 class="text-h3 font-weight-bold text-primary mb-2">Tu Ayuda Salva Vidas</h1>
+                <p class="text-body-1 text-medium-emphasis">Elige tu método preferido y registra tu donación para ayudarnos a seguir.</p>
+            </div>
+
+            <v-row align="start">
+                <!-- Left Column: Payment Methods -->
+                <v-col cols="12" md="7">
+                    <div class="mb-8">
+                        <!-- Header aligned with Right Column Header -->
+                        <h2 class="text-h5 font-weight-bold mb-4 d-flex align-center">
+                            <v-icon color="secondary" class="mr-2">mdi-qrcode-scan</v-icon>
+                            Billeteras Digitales
+                        </h2>
+                        <v-row>
+                            <v-col v-for="method in qrMethods" :key="method.id" cols="12" sm="6">
+                                <v-card class="rounded-xl elevation-2 h-100 border-thin" color="surface">
+                                    <v-card-text class="text-center pa-6">
+                                        <div class="text-h6 font-weight-bold mb-4 text-primary">{{ method.name }}</div>
+                                        <v-sheet class="pa-2 rounded-lg d-inline-block mb-4" color="white" elevation="1">
+                                            <v-img
+                                                :src="method.qr_code_path"
+                                                :alt="method.name"
+                                                width="160"
+                                                height="160"
+                                                cover
+                                                class="rounded"
+                                            ></v-img>
+                                        </v-sheet>
+                                        <p class="text-body-2 mb-2 text-medium-emphasis">{{ method.instructions }}</p>
+                                        <v-chip
+                                            color="secondary"
+                                            variant="tonal"
+                                            class="font-weight-bold"
+                                            @click="copyToClipboard(method.account_number)"
+                                        >
+                                            {{ method.account_number }}
+                                            <v-icon end size="small">mdi-content-copy</v-icon>
+                                        </v-chip>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <div v-if="bankMethods.length > 0">
+                        <h2 class="text-h5 font-weight-bold mb-4 d-flex align-center">
+                            <v-icon color="secondary" class="mr-2">mdi-bank</v-icon>
+                            Transferencias Bancarias
+                        </h2>
+                        <v-card class="rounded-xl elevation-2 border-thin">
+                            <v-list lines="two" class="rounded-xl py-2">
+                                <template v-for="(method, index) in bankMethods" :key="method.id">
+                                    <v-list-item class="py-3 px-10">
+
+                                        <v-list-item-title class="font-weight-bold text-body-1 mb-1">
+                                            {{ method.name }}
+                                        </v-list-item-title>
+
+                                        <v-list-item-subtitle class="mb-2">
+                                            {{ method.instructions }}
+                                        </v-list-item-subtitle>
+
+                                        <div class="d-flex flex-wrap gap-2 align-center mt-1">
+                                            <v-chip
+                                                size="small"
+                                                variant="outlined"
+                                                color="grey-darken-2"
+                                                @click="copyToClipboard(method.account_number)"
+                                                class="mr-2 mb-1"
+                                            >
+                                                <v-icon start size="small">mdi-card-account-details</v-icon>
+                                                {{ method.account_number }}
+                                            </v-chip>
+
+                                            <v-chip
+                                                v-if="method.cci"
+                                                size="small"
+                                                variant="outlined"
+                                                color="grey-darken-2"
+                                                @click="copyToClipboard(method.cci)"
+                                                class="mb-1"
+                                            >
+                                                <v-icon start size="small">mdi-bank-transfer</v-icon>
+                                                CCI: {{ method.cci }}
+                                            </v-chip>
+                                        </div>
+                                    </v-list-item>
+                                    <v-divider v-if="index < bankMethods.length - 1" inset></v-divider>
+                                </template>
                             </v-list>
-                        </v-card-text>
-                    </v-card>
+                        </v-card>
+                    </div>
                 </v-col>
 
-                <v-col cols="12" md="6">
-                    <v-card>
-                        <v-card-title>Registrar Donación</v-card-title>
-                        <v-card-text>
+                <!-- Right Column: Registration Form -->
+                <v-col cols="12" md="5">
+                    <!-- Title OUTSIDE the card to match Left Column alignment -->
+                    <h2 class="text-h5 font-weight-bold mb-4 d-flex align-center">
+                        <v-icon color="secondary" class="mr-2">mdi-file-document-edit-outline</v-icon>
+                        Registrar Donación
+                    </h2>
+
+                    <v-card class="rounded-xl elevation-4">
+                        <!-- Clean card without heavy header, matching the QR cards style -->
+                        <v-card-text class="pa-6 pt-8">
+                            <v-alert
+                                color="primary"
+                                variant="tonal"
+                                class="mb-6 rounded-lg"
+                                border="start"
+                                density="compact"
+                            >
+                                <div class="text-caption font-weight-medium">
+                                    Envíanos tu comprobante para validar tu ayuda.
+                                </div>
+                            </v-alert>
+
                             <v-form @submit.prevent="submit">
                                 <v-text-field
                                     v-model="form.donor_name"
-                                    label="Nombre del Donante"
-                                    required
+                                    label="Tu Nombre Completo"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    prepend-inner-icon="mdi-account"
+                                    :rules="[v => !!v || 'Requerido']"
                                     :error-messages="form.errors.donor_name"
+                                    class="mb-2"
                                 ></v-text-field>
 
                                 <v-text-field
                                     v-model="form.amount"
-                                    label="Monto"
+                                    label="Monto Donado (S/)"
                                     type="number"
-                                    required
+                                    variant="outlined"
+                                    density="comfortable"
+                                    prepend-inner-icon="mdi-cash"
+                                    :rules="[v => !!v || 'Requerido']"
                                     :error-messages="form.errors.amount"
+                                    class="mb-2"
                                 ></v-text-field>
 
                                 <v-select
                                     v-model="form.payment_method"
                                     :items="paymentMethods.map(method => method.name)"
-                                    label="Método de Pago"
-                                    required
+                                    label="Método Utilizado"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    prepend-inner-icon="mdi-credit-card-outline"
+                                    :rules="[v => !!v || 'Requerido']"
                                     :error-messages="form.errors.payment_method"
+                                    class="mb-2"
                                 ></v-select>
 
                                 <v-file-input
-                                    label="Comprobante"
+                                    label="Adjuntar Comprobante (Imagen)"
                                     @input="form.proof = $event.target.files[0]"
+                                    variant="outlined"
+                                    density="comfortable"
+                                    prepend-icon=""
+                                    prepend-inner-icon="mdi-paperclip"
+                                    :rules="[v => !!v || 'Requerido']"
                                     :error-messages="form.errors.proof"
+                                    show-size
+                                    class="mb-6"
                                 ></v-file-input>
 
-                                <v-btn type="submit" :loading="form.processing" color="primary">
-                                    Registrar
+                                <v-btn
+                                    type="submit"
+                                    :loading="form.processing"
+                                    color="secondary"
+                                    block
+                                    size="large"
+                                    class="rounded-pill font-weight-bold elevation-2"
+                                >
+                                    Enviar Registro
+                                    <v-icon end>mdi-send</v-icon>
                                 </v-btn>
                             </v-form>
                         </v-card-text>
                     </v-card>
                 </v-col>
             </v-row>
+
+            <v-snackbar
+                v-model="snackbar"
+                color="success"
+                :timeout="2000"
+                location="bottom center"
+                rounded="pill"
+            >
+                <v-icon start>mdi-check</v-icon>
+                Número copiado al portapapeles
+            </v-snackbar>
         </v-container>
     </PublicLayout>
 </template>

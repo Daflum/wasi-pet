@@ -28,6 +28,7 @@ const settingsForm = useForm({
     tiktok_url: props.settings.tiktok_url || '',
     x_url: props.settings.x_url || '',
     youtube_url: props.settings.youtube_url || '',
+    hero_image: null, // New field for Hero Image
 });
 
 const submitSettings = () => {
@@ -121,6 +122,36 @@ const deleteItem = (item) => {
             <!-- General Settings -->
             <v-card class="pa-6 mb-8">
                 <v-form @submit.prevent="submitSettings">
+                    <h2 class="text-h6 mb-4">Personalización del Sitio</h2>
+                    <v-row>
+                        <!-- Hero Image Upload -->
+                        <v-col cols="12">
+                            <v-file-input
+                                label="Imagen Principal (Hero)"
+                                accept="image/*"
+                                prepend-icon="mdi-image"
+                                hint="Sube una foto de alta calidad para la portada. Si la dejas vacía, se usará el fondo animado por defecto."
+                                persistent-hint
+                                @input="settingsForm.hero_image = $event.target.files[0]"
+                                :error-messages="settingsForm.errors.hero_image"
+                            ></v-file-input>
+
+                            <!-- Preview Current Image -->
+                            <div v-if="settings.hero_image" class="mt-4">
+                                <p class="text-caption mb-2">Imagen Actual:</p>
+                                <v-img
+                                    :src="settings.hero_image"
+                                    max-height="200"
+                                    max-width="400"
+                                    cover
+                                    class="rounded-lg elevation-2"
+                                ></v-img>
+                            </div>
+                        </v-col>
+                    </v-row>
+
+                    <v-divider class="my-6"></v-divider>
+
                     <h2 class="text-h6 mb-4">Redes Sociales</h2>
                     <v-row>
                         <v-col cols="12" md="6">
@@ -170,7 +201,7 @@ const deleteItem = (item) => {
                     <v-row>
                         <v-col cols="12" class="d-flex justify-end">
                             <v-btn type="submit" color="primary" :loading="settingsForm.processing">
-                                Guardar Redes Sociales
+                                Guardar Configuración
                             </v-btn>
                         </v-col>
                     </v-row>

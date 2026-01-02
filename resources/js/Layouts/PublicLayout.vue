@@ -1,11 +1,41 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 
 const drawer = ref(false);
 const page = usePage();
 const snackbar = ref(false);
 const snackbarText = ref('');
+
+// Scroll Logic for Dynamic Navbar
+const isScrolled = ref(false);
+
+const handleScroll = () => {
+    isScrolled.value = window.scrollY > 50;
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
+
+// Route Logic: Check if we are on the Home page
+const isHomePage = computed(() => page.url === '/');
+
+// Navbar State Logic
+// If NOT home page, always treat as "scrolled" (solid color)
+// If IS home page, rely on scroll position
+const showSolidNavbar = computed(() => !isHomePage.value || isScrolled.value);
+
+// Dynamic Classes
+const navbarColor = 'transparent';
+const navbarElevation = computed(() => showSolidNavbar.value ? 4 : 0);
+
+// Text always white for consistency
+const logoColor = 'white';
 
 watch(() => page.props.flash, (flash) => {
     if (flash && flash.success) {
@@ -23,24 +53,30 @@ watch(() => page.props.flash, (flash) => {
                 <Link href="/" as="div" class="v-list-item--link">
                     <v-list-item prepend-icon="mdi-home" title="Inicio"></v-list-item>
                 </Link>
-                <!-- Placeholder for Pets route -->
                 <Link href="/mascotas" as="div" class="v-list-item--link">
                     <v-list-item prepend-icon="mdi-paw" title="Ver Mascotas"></v-list-item>
                 </Link>
                  <Link href="/donar" as="div" class="v-list-item--link">
                     <v-list-item prepend-icon="mdi-heart" title="Donar"></v-list-item>
                 </Link>
-
-                <!-- Login hidden from public menu -->
             </v-list>
         </v-navigation-drawer>
 
-        <!-- Public App Bar -->
-        <v-app-bar color="primary" elevation="2">
-            <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
+        <!-- Public App Bar (Dynamic) -->
+        <v-app-bar
+            :color="navbarColor"
+            :elevation="navbarElevation"
+            class="transition-all"
+            :class="{ 'glass-navbar': showSolidNavbar }"
+        >
+            <v-app-bar-nav-icon
+                @click="drawer = !drawer"
+                class="d-md-none"
+                :color="logoColor"
+            ></v-app-bar-nav-icon>
 
-            <Link href="/" class="text-decoration-none text-white d-flex align-center ml-4">
-                <v-icon icon="mdi-paw" class="mr-2"></v-icon>
+            <Link href="/" class="text-decoration-none d-flex align-center ml-4 text-white">
+                <v-icon icon="mdi-paw" class="mr-2" :color="logoColor"></v-icon>
                 <v-toolbar-title class="font-weight-bold">Adra Uni</v-toolbar-title>
             </Link>
 
@@ -49,20 +85,27 @@ watch(() => page.props.flash, (flash) => {
             <!-- Desktop Menu -->
             <div class="d-none d-md-flex align-center ga-2 mr-4">
                 <Link href="/" as="div">
-                    <v-btn variant="text">Inicio</v-btn>
+                    <v-btn variant="text" :color="logoColor" class="font-weight-medium">Inicio</v-btn>
                 </Link>
                 <Link href="/mascotas" as="div">
-                    <v-btn variant="text">Mascotas</v-btn>
+                    <v-btn variant="text" :color="logoColor" class="font-weight-medium">Mascotas</v-btn>
                 </Link>
                 <Link href="/donar" as="div">
-                    <v-btn variant="text">Donar</v-btn>
+                    <v-btn
+                        :variant="showSolidNavbar ? 'elevated' : 'outlined'"
+                        :color="showSolidNavbar ? 'white' : 'white'"
+                        :class="showSolidNavbar ? 'text-primary' : ''"
+                        class="rounded-pill px-6 font-weight-bold"
+                    >
+                        Donar
+                    </v-btn>
                 </Link>
-
-                <!-- Login hidden from public menu -->
             </div>
         </v-app-bar>
 
-        <v-main class="bg-grey-lighten-4">
+        <!-- Main Content -->
+        <!-- Add padding-top ONLY if we are NOT on home page, to prevent content hiding behind fixed navbar -->
+        <v-main class="bg-grey-lighten-4" :class="{ 'pt-0': isHomePage, 'pt-16': !isHomePage }">
             <slot />
 
             <v-snackbar
@@ -132,12 +175,6 @@ watch(() => page.props.flash, (flash) => {
                     variant="text"
                     class="mx-2"
                 ></v-btn>
-                <!-- <Link href="/colabora">
-                    <v-btn icon variant="text" class="mx-2">
-                        <v-icon>mdi-coffee</v-icon>
-                        <v-tooltip activator="parent" location="top">Invítanos un código</v-tooltip>
-                    </v-btn>
-                </Link> -->
             </div>
 
             <div class="pt-2 text-grey-lighten-1">
@@ -151,5 +188,17 @@ watch(() => page.props.flash, (flash) => {
 <style scoped>
 .v-list-item--link {
     cursor: pointer;
+}
+
+.transition-all {
+    transition: background-color 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+/* Glassmorphism for Scrolled Navbar (Primary Color) */
+.glass-navbar {
+    /* Uses the primary theme color but with opacity */
+    background-color: rgba(var(--v-theme-primary), 0.85) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 </style>
