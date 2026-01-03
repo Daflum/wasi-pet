@@ -112,7 +112,7 @@ const submit = () => {
                         <form @submit.prevent="submit">
                             <VTextField
                                 v-model="form.event_slug"
-                                label="Identificador del Evento (slug)"
+                                label="Identificador del Evento"
                                 :error-messages="form.errors.event_slug"
                                 :disabled="!!selectedEvent"
                                 required

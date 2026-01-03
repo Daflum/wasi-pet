@@ -56,15 +56,8 @@ onMounted(() => {
                     <div class="hero-overlay-strong"></div>
                 </v-img>
 
-                <!-- OPCIÓN B: Mesh Gradient (Fallback elegante si no hay foto) -->
-                <div v-else class="hero-bg mesh-gradient-bg">
-                    <!-- Blob 1: Primary (Top Center-Left) -->
-                    <div class="mesh-blob blob-1"></div>
-                    <!-- Blob 2: Secondary (Bottom Center-Right) -->
-                    <div class="mesh-blob blob-2"></div>
-                    <!-- Blob 3: Accent/Mix (Center) - Bridges the gap -->
-                    <div class="mesh-blob blob-3"></div>
-
+                <!-- OPCIÓN B: Elegant Gradient Flow (Fallback) -->
+                <div v-else class="hero-bg gradient-flow-bg">
                     <!-- Dark Overlay to ensure text readability -->
                     <div class="mesh-dark-overlay"></div>
                     <div class="mesh-overlay-texture"></div>
@@ -312,49 +305,25 @@ onMounted(() => {
     background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
 }
 
-/* Option B: Mesh Gradient (Fallback) */
-.mesh-gradient-bg {
-    background-color: rgb(var(--v-theme-surface));
-    overflow: hidden;
-}
-
-.mesh-blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(100px); /* Increased blur for softer blend */
-    opacity: 0.7;
-    animation: float-blob 15s infinite alternate;
-}
-
-/* Blob 1: Primary - Top Leftish */
-.blob-1 {
-    top: -20%;
-    left: -10%;
-    width: 70vw;
-    height: 70vw;
-    background: rgb(var(--v-theme-primary));
-}
-
-/* Blob 2: Secondary - Bottom Rightish */
-.blob-2 {
-    bottom: -20%;
-    right: -10%;
-    width: 70vw;
-    height: 70vw;
-    background: rgb(var(--v-theme-secondary));
-    animation-delay: -5s;
-}
-
-/* Blob 3: Center Mix - Bridges the gap */
-.blob-3 {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60vw;
-    height: 60vw;
-    background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary)));
-    opacity: 0.5;
-    animation: pulse-blob 10s infinite alternate;
+/* Option B: Gradient Flow (Clean & Elegant) */
+.gradient-flow-bg {
+    /*
+       Usamos un gradiente lineal con 4 colores clave:
+       1. Primary (Tu color principal)
+       2. Secondary (Tu color secundario)
+       3. Primary (Repetimos para suavizar)
+       4. Secondary (Cerramos el ciclo)
+    */
+    background: linear-gradient(-45deg,
+        rgb(var(--v-theme-primary)),
+        rgb(var(--v-theme-secondary)),
+        rgb(var(--v-theme-primary)),
+        rgb(var(--v-theme-secondary))
+    );
+    background-size: 400% 400%;
+    animation: gradient-flow 15s ease infinite;
+    width: 100%;
+    height: 100%;
 }
 
 .mesh-dark-overlay {
@@ -363,7 +332,7 @@ onMounted(() => {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Darkens the mesh to pop white text */
+    background: rgba(0, 0, 0, 0.3); /* Overlay suave */
 }
 
 .mesh-overlay-texture {
@@ -377,14 +346,10 @@ onMounted(() => {
     opacity: 0.4;
 }
 
-@keyframes float-blob {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(30px, 30px) scale(1.1); }
-}
-
-@keyframes pulse-blob {
-    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-    100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
+@keyframes gradient-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .hero-content-glass {

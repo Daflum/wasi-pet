@@ -16,6 +16,11 @@ class UpdateSettingsRequest extends FormRequest
         // Settings are dynamic, so we just validate that they are strings or files
         $rules = [];
         foreach ($this->all() as $key => $value) {
+            if ($key === 'delete_hero_image') {
+                $rules[$key] = 'boolean';
+                continue;
+            }
+
             if ($this->hasFile($key)) {
                 $rules[$key] = 'image|max:2048';
             } else {

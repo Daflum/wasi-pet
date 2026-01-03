@@ -23,7 +23,24 @@ class SettingController extends Controller
     {
         $data = $request->except(['_token', '_method']);
 
+        // Handle Hero Image Deletion
+        if ($request->boolean('delete_hero_image')) {
+            $currentImage = Setting::where('key', 'hero_image')->first();
+            if ($currentImage && $currentImage->value) {
+                // Extract public ID if needed, or just delete if you have the logic
+                // For Cloudinary, usually we need the public ID.
+                // Assuming the value is the full URL, we might need to parse it or just leave it
+                // if we don't want to delete from Cloudinary (though we should).
+                // For now, let's just remove it from DB as per request "eliminar una imagen del hero".
+                $currentImage->delete();
+            }
+            // Remove from data to avoid re-processing
+            unset($data['delete_hero_image']);
+        }
+
         foreach ($data as $key => $value) {
+            if ($key === 'delete_hero_image') continue;
+
             if ($request->hasFile($key)) {
                 $folder = str_ends_with($key, '_qr') ? 'qrs' : 'settings';
                 $relativePath = $request->file($key)->store($folder, 'cloudinary');

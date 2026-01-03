@@ -29,13 +29,27 @@ const settingsForm = useForm({
     x_url: props.settings.x_url || '',
     youtube_url: props.settings.youtube_url || '',
     hero_image: null, // New field for Hero Image
+    delete_hero_image: false, // Flag to delete hero image
 });
 
 const submitSettings = () => {
     settingsForm.post(route('admin.settings.update'), {
         preserveScroll: true,
         forceFormData: true,
+        onSuccess: () => {
+            // Reset file input and delete flag after successful save
+            settingsForm.reset('hero_image', 'delete_hero_image');
+        },
     });
+};
+
+const markHeroImageForDeletion = () => {
+    settingsForm.delete_hero_image = true;
+    settingsForm.hero_image = null;
+};
+
+const undoDeleteHeroImage = () => {
+    settingsForm.delete_hero_image = false;
 };
 
 
@@ -132,20 +146,58 @@ const deleteItem = (item) => {
                                 prepend-icon="mdi-image"
                                 hint="Sube una foto de alta calidad para la portada. Si la dejas vacía, se usará el fondo animado por defecto."
                                 persistent-hint
-                                @input="settingsForm.hero_image = $event.target.files[0]"
+                                v-model="settingsForm.hero_image"
                                 :error-messages="settingsForm.errors.hero_image"
+                                @update:modelValue="settingsForm.delete_hero_image = false"
                             ></v-file-input>
+                            <!-- Note: If user selects a file, we unmark deletion automatically -->
 
                             <!-- Preview Current Image -->
                             <div v-if="settings.hero_image" class="mt-4">
-                                <p class="text-caption mb-2">Imagen Actual:</p>
-                                <v-img
-                                    :src="settings.hero_image"
-                                    max-height="200"
-                                    max-width="400"
-                                    cover
-                                    class="rounded-lg elevation-2"
-                                ></v-img>
+                                <!-- State: Normal (Show Image) -->
+                                <div v-if="!settingsForm.delete_hero_image" class="d-flex align-center">
+                                    <div class="d-flex flex-column">
+                                        <p class="text-caption mb-2">Imagen Actual:</p>
+                                        <v-img
+                                            :src="settings.hero_image"
+                                            max-height="200"
+                                            max-width="400"
+                                            cover
+                                            class="rounded-lg elevation-2"
+                                        ></v-img>
+                                    </div>
+                                    <v-btn
+                                        color="error"
+                                        variant="text"
+                                        icon="mdi-delete"
+                                        class="ml-4"
+                                        @click="markHeroImageForDeletion"
+                                        title="Eliminar imagen"
+                                    ></v-btn>
+                                </div>
+
+                                <!-- State: Marked for Deletion -->
+                                <v-alert
+                                    v-else
+                                    type="warning"
+                                    variant="tonal"
+                                    density="compact"
+                                    class="mt-2"
+                                    icon="mdi-delete-clock"
+                                >
+                                    <div class="d-flex align-center justify-space-between w-100">
+                                        <span>La imagen actual se eliminará al guardar los cambios.</span>
+                                        <v-btn
+                                            variant="text"
+                                            color="primary"
+                                            size="small"
+                                            class="ml-2"
+                                            @click="undoDeleteHeroImage"
+                                        >
+                                            Deshacer
+                                        </v-btn>
+                                    </div>
+                                </v-alert>
                             </div>
                         </v-col>
                     </v-row>
