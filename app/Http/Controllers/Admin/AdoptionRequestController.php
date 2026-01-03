@@ -12,7 +12,7 @@ class AdoptionRequestController extends Controller
     public function index()
     {
         return Inertia::render('Admin/AdoptionRequests/Index', [
-            'adoption_requests' => AdoptionRequest::with('pet')->latest()->paginate(),
+            'adoption_requests' => AdoptionRequest::with('pet')->latest()->get(),
         ]);
     }
 

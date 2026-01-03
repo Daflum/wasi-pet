@@ -34,7 +34,17 @@ class BingoController extends Controller
         ini_set('memory_limit', '512M');
 
         $validator = Validator::make($request->all(), [
-            'event_slug' => 'required|string|max:255|regex:/^[a-z0-9-]+$/',
+            'event_slug' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-z0-9-]+$/',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->boolean('is_new') && BingoHash::where('event_slug', $value)->exists()) {
+                        $fail('El identificador del evento ya existe. Por favor elija otro o seleccione el evento de la lista para continuar.');
+                    }
+                },
+            ],
             'quantity' => 'required|integer|min:1|max:1000',
             'start_sequence' => 'required|integer|min:1',
             'background_image' => 'nullable|image',
@@ -92,6 +102,23 @@ class BingoController extends Controller
         return Redirect::route('admin.bingo.index')
             ->with('success', '¡Bingo generado! La descarga comenzará en breve.')
             ->with('download_url', $downloadUrl);
+    }
+
+    public function destroy($event_slug)
+    {
+        $count = BingoHash::where('event_slug', $event_slug)->delete();
+
+        if ($count === 0) {
+            return Redirect::back()->with('error', 'El evento no existe.');
+        }
+
+        $zipDir = storage_path('app/bingo-zips');
+        $files = File::glob($zipDir . '/' . $event_slug . '_*.zip');
+        foreach ($files as $file) {
+            File::delete($file);
+        }
+
+        return Redirect::back()->with('success', 'Evento eliminado correctamente.');
     }
 
     public function download($filename)

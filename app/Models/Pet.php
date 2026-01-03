@@ -40,10 +40,6 @@ class Pet extends Model
     protected static function boot()
     {
         parent::boot();
-
-        static::creating(function ($pet) {
-            $pet->slug = Str::slug($pet->name);
-        });
     }
 
     /**

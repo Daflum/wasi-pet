@@ -4,7 +4,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps({
-    donations: Object,
+    donations: Array,
 });
 
 const form = useForm({
@@ -55,7 +55,7 @@ const getStatusColor = (status) => {
 
             <v-card>
                 <v-data-table
-                    :items="donations.data"
+                    :items="donations"
                     :headers="[
                         { title: 'Donante', key: 'donor_name' },
                         { title: 'Monto (S/)', key: 'amount' },

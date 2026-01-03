@@ -53,7 +53,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
     // Bingo
     Route::get('bingo/download/{filename}', [BingoController::class, 'download'])->name('bingo.download');
     Route::get('bingo/template-guide', [BingoController::class, 'downloadTemplate'])->name('bingo.template-guide'); // Nueva ruta
-    Route::resource('bingo', BingoController::class)->only(['index', 'store']);
+    Route::resource('bingo', BingoController::class)->only(['index', 'store', 'destroy']);
 
     // Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

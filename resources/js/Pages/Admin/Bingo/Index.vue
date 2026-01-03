@@ -1,6 +1,6 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import {
     VCard,
@@ -28,6 +28,7 @@ const form = useForm({
     quantity: 10,
     start_sequence: 1,
     background_image: null,
+    is_new: true,
 });
 
 const selectedEvent = ref(null);
@@ -36,11 +37,25 @@ const selectEvent = (event) => {
     selectedEvent.value = event;
     form.event_slug = event.event_slug;
     form.start_sequence = event.total + 1;
+    form.is_new = false;
 };
 
 const createNewEvent = () => {
     selectedEvent.value = null;
     form.reset();
+    form.is_new = true;
+};
+
+const deleteEvent = (eventSlug) => {
+    if (confirm('¿Estás seguro de que quieres eliminar este evento y todos sus datos asociados?')) {
+        router.delete(route('admin.bingo.destroy', eventSlug), {
+            onSuccess: () => {
+                if (selectedEvent.value && selectedEvent.value.event_slug === eventSlug) {
+                    createNewEvent();
+                }
+            },
+        });
+    }
 };
 
 const downloadTemplateGuide = () => {
@@ -65,6 +80,7 @@ const submit = () => {
             if (updatedEvent) {
                 selectedEvent.value = updatedEvent;
                 form.start_sequence = updatedEvent.total + 1;
+                form.is_new = false;
             }
         },
         onFinish: () => {
@@ -91,6 +107,15 @@ const submit = () => {
                                 @click="selectEvent(event)"
                                 :active="selectedEvent && selectedEvent.event_slug === event.event_slug"
                             >
+                                <template v-slot:append>
+                                    <VBtn
+                                        icon="mdi-delete"
+                                        variant="text"
+                                        color="error"
+                                        size="small"
+                                        @click.stop="deleteEvent(event.event_slug)"
+                                    ></VBtn>
+                                </template>
                                 <VListItemTitle>{{ event.event_slug }}</VListItemTitle>
                                 <VListItemSubtitle>
                                     {{ event.total }} cartones generados. Última vez: {{ new Date(event.last_generated).toLocaleString() }}

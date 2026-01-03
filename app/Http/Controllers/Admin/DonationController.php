@@ -14,7 +14,7 @@ class DonationController extends Controller
      */
     public function index()
     {
-        $donations = Donation::with(['user', 'pet'])->latest()->paginate();
+        $donations = Donation::with(['user', 'pet'])->latest()->get();
         return Inertia::render('Admin/Donations/Index', [
             'donations' => $donations
         ]);

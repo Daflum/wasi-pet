@@ -4,7 +4,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps({
-    adoption_requests: Object,
+    adoption_requests: Array,
 });
 
 const form = useForm({
@@ -46,7 +46,7 @@ const generateWhatsAppLink = (request) => {
 };
 
 const getStatusColor = (status) => {
-    const colors = { 'Pendiente': 'warning', 'Aprobado': 'success', 'Rechazada': 'error', 'Cerrada': 'grey' };
+    const colors = { 'Pendiente': 'warning', 'Aprobado': 'success', 'Rechazado': 'error', 'Cerrada': 'grey' };
     return colors[status] || 'grey';
 };
 </script>
@@ -60,7 +60,7 @@ const getStatusColor = (status) => {
 
             <v-card>
                 <v-data-table
-                    :items="adoption_requests.data"
+                    :items="adoption_requests"
                     :headers="[
                         { title: 'Solicitante', key: 'name' },
                         { title: 'DNI', key: 'dni' },
