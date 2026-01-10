@@ -1,23 +1,26 @@
 #!/bin/bash
-
-# Exit on fail
 set -e
 
-# Substitute $PORT in nginx config
+echo "🚀 Configuring Nginx..."
+
+# Substitute $PORT in Nginx config template
 envsubst '${PORT}' < /etc/nginx/sites-available/default.template > /etc/nginx/sites-available/default
 
-# Run migrations
-echo "Running migrations..."
-php artisan migrate --force
+# Recreate symlink to ensure Nginx uses our config
+rm -f /etc/nginx/sites-enabled/default
+ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# Cache configuration, routes, and views
-echo "Caching configuration..."
+echo "📂 Running Laravel tasks..."
+php artisan migrate --force
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan storage:link || true
 
-# Start Nginx and PHP-FPM
-echo "Starting Nginx and PHP-FPM..."
+echo "🐘 Starting PHP-FPM..."
 php-fpm -D
+
+echo "🌐 Starting Nginx..."
+# Validate config and start in foreground
 nginx -t
 nginx -g 'daemon off;'
