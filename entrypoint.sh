@@ -18,5 +18,6 @@ php artisan view:cache
 
 # Start Nginx and PHP-FPM
 echo "Starting Nginx and PHP-FPM..."
-service nginx start
-php-fpm
+php-fpm -D
+nginx -t
+nginx -g 'daemon off;'
