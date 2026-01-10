@@ -29,9 +29,11 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Configure PHP-FPM logging to stdout
+# Configure PHP-FPM logging and upload limits
 RUN echo "catch_workers_output = yes" >> /usr/local/etc/php-fpm.d/www.conf && \
-    echo "php_admin_flag[log_errors] = on" >> /usr/local/etc/php-fpm.d/www.conf
+    echo "php_admin_flag[log_errors] = on" >> /usr/local/etc/php-fpm.d/www.conf && \
+    echo "php_admin_value[upload_max_filesize] = 20M" >> /usr/local/etc/php-fpm.d/www.conf && \
+    echo "php_admin_value[post_max_size] = 20M" >> /usr/local/etc/php-fpm.d/www.conf
 
 # Copy Nginx template
 COPY nginx.conf /etc/nginx/sites-available/default.template
