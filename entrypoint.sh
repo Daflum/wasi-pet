@@ -3,6 +3,13 @@
 # Exit on fail
 set -e
 
+# Substitute $PORT in nginx config
+envsubst '${PORT}' < /etc/nginx/sites-available/default.template > /etc/nginx/sites-available/default
+
+# Run migrations
+echo "Running migrations..."
+php artisan migrate --force
+
 # Cache configuration, routes, and views
 echo "Caching configuration..."
 php artisan config:cache
