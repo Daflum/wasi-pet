@@ -6,11 +6,12 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve Application with PHP/Apache
-FROM php:8.4-apache
+# Stage 2: Serve Application with PHP-FPM and Nginx
+FROM php:8.4-fpm
 
-# Install system dependencies
+# Install system dependencies and Nginx
 RUN apt-get update && apt-get install -y \
+    nginx \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
@@ -27,13 +28,8 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
-
-# Configure Apache DocumentRoot to point to Laravel's public directory
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+# Configure Nginx
+COPY nginx.conf /etc/nginx/sites-available/default
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
