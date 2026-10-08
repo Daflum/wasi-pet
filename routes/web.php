@@ -33,9 +33,9 @@ Route::name('public.')->group(function () {
 
 Route::get('/admin', function () {
     return redirect()->route('admin.dashboard');
-})->middleware(['auth', 'verified']);
+})->middleware(['auth', 'verified', 'admin']);
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Profile
@@ -52,7 +52,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
 
     // Bingo
     Route::get('bingo/download/{filename}', [BingoController::class, 'download'])->name('bingo.download');
-    Route::get('bingo/template-guide', [BingoController::class, 'downloadTemplate'])->name('bingo.template-guide'); // Nueva ruta
+    Route::get('bingo/template-guide', [BingoController::class, 'downloadTemplate'])->name('bingo.template-guide');
     Route::resource('bingo', BingoController::class)->only(['index', 'store', 'destroy']);
 
     // Settings

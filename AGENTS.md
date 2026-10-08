@@ -83,7 +83,6 @@ Follow **Material Design 3** guidelines via Vuetify defaults.
 
 ## 8. Iterative Development
 
-* **Blueprint:** Maintain a `blueprint.md` to track progress.
 * **Verification:** After code changes, verify that the build commands (`./vendor/bin/sail npm run build`) do not fail.
 
 ## 9. Domain-Specific Architecture Rules
@@ -96,7 +95,7 @@ Follow **Material Design 3** guidelines via Vuetify defaults.
 ### 9.2. Pet Status Logic
 *   **Source of Truth:** The `status` column in the `pets` table.
 *   **Implementation:** The status is a Spanish `string`. It is validated in `Admin\PetController@updateStatus`.
-*   **Allowed Statuses:**
+*   **Allowed Statuses (stored in Spanish):**
     *   `Disponible`
     *   `En Proceso`
     *   `Adoptado`

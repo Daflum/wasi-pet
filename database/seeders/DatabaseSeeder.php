@@ -13,7 +13,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        if (! App::environment('local', 'development')) {
+            return;
+        }
 
         User::factory()->create([
             'name' => 'Admin User',
@@ -26,12 +28,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        if (App::environment('local', 'development')) {
-            $this->call([
-                PetSeeder::class,
-                PaymentMethodSeeder::class,
-                DonationSeeder::class,
-            ]);
-        }
+        $this->call([
+            PetSeeder::class,
+            PaymentMethodSeeder::class,
+            DonationSeeder::class,
+        ]);
     }
 }

@@ -27,11 +27,7 @@ class SettingController extends Controller
         if ($request->boolean('delete_hero_image')) {
             $currentImage = Setting::where('key', 'hero_image')->first();
             if ($currentImage && $currentImage->value) {
-                // Extract public ID if needed, or just delete if you have the logic
-                // For Cloudinary, usually we need the public ID.
-                // Assuming the value is the full URL, we might need to parse it or just leave it
-                // if we don't want to delete from Cloudinary (though we should).
-                // For now, let's just remove it from DB as per request "eliminar una imagen del hero".
+                // El archivo permanece en Cloudinary; solo se elimina su referencia.
                 $currentImage->delete();
             }
             // Remove from data to avoid re-processing

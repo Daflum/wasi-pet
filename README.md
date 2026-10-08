@@ -1,59 +1,127 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# WasiPet
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+WasiPet is a web application that supports pet management and adoption at Adra Uni. Visitors can browse animals, submit adoption applications, and record donations with payment receipts. The admin panel brings together pet management, adoption applications, donations, payment methods, and site settings.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Public pet catalog:** featured animals, a paginated listing with filters for name, species, gender, size, and age, and individual pet profiles accessed through slugs.
+- **Adoption applications:** a public application form and an administrative review workflow. When an application is approved, an observer marks the pet as adopted, closes its other pending applications, and emails those applicants.
+- **Donations and pet sponsorship:** records general donations or contributions associated with a pet, accepts payment receipt uploads, and supports administrative review with statuses and notes. The application records payments made externally; it does not integrate a payment gateway.
+- **Administration:** pet forms and status updates, adoption and donation review, payment method management with bank details or QR codes, social links, and a homepage image.
+- **Digital bingo:** generates PNG cards packaged in a ZIP, checks for duplicates within each event, and provides a downloadable design guide. ZIP files are stored temporarily and deleted after download.
+- **Admin access:** session authentication, password recovery, email verification, and authorization through the `admin` role. Public user registration is disabled.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Technology stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Area | Technologies |
+| --- | --- |
+| Backend | PHP `^8.2`, Laravel 12, Eloquent, Laravel Breeze |
+| Frontend | Vue 3 with `<script setup>`, Inertia.js 2, Vuetify 3, Material Design Icons |
+| Integration and build | Ziggy, Vite 6, `vite-plugin-vuetify`, Sass |
+| Data and local development | MySQL 8.4, Docker Compose, Laravel Sail with PHP 8.5, Mailpit; MinIO included in Compose |
+| Files and images | Cloudinary, Intervention Image 3, PHP ZipArchive extension |
+| Verification | PHPUnit 11, Laravel Pint |
 
-## Learning Laravel
+Resolved dependency versions are pinned in `composer.lock` and `package-lock.json`.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Architecture
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Laravel handles routing, validation through Form Requests, data access, and domain rules. Controllers deliver pages and data through `Inertia::render`; Vue renders the interface and uses `useForm` to submit forms. Vuetify supplies the UI components.
 
-## Laravel Sponsors
+Business code separates **Admin** and **Public** controllers and pages. Authentication and profile controllers retain the Breeze structure. Admin routes, including the `/admin` entry point, require the `auth`, `verified`, and `admin` middleware.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```text
+app/
+├── Http/Controllers/{Admin,Public,Auth}/
+├── Http/Requests/{Admin,Public,Auth}/
+├── Http/Middleware/
+├── Models/
+├── Observers/
+└── Notifications/
+resources/js/
+├── Pages/{Admin,Public,Auth,Profile}/
+├── Layouts/
+└── Components/
+database/             # Migrations, factories, and seeders
+routes/web.php        # Public and admin route groups
+routes/auth.php       # Authentication
+tests/                # PHPUnit
+compose.yaml          # Local Sail environment
+AGENTS.md             # Persistent development rules
+```
 
-### Premium Partners
+Models contain relationships, scopes, and accessors. `AdoptionRequestObserver` coordinates application closure when an adoption is approved. Payment methods have their own table, while `settings` stores global configuration.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Image and payment receipt uploads use the Cloudinary disk, with their URLs stored in the database. The bingo generator processes its template locally and uses `storage/app/bingo-zips` for temporary files. MinIO is part of the local environment but does not replace Cloudinary in the implemented upload workflows.
 
-## Contributing
+## Installation and local development
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Git, Docker, and Docker Compose are required. Use WSL2 on Windows. PHP, Composer, Artisan, and npm run inside Docker, following [AGENTS.md](AGENTS.md).
 
-## Code of Conduct
+1. Clone the repository, enter its directory, and copy the environment configuration:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   ```bash
+   cp .env.example .env
+   ```
 
-## Security Vulnerabilities
+   Set `DB_PASSWORD` in `.env` to a local development password before starting MySQL. The connection uses `DB_HOST=mysql`, `DB_DATABASE=wasi_pet`, and `DB_USERNAME=sail`. If port 80 is occupied, set `APP_PORT` and adjust `APP_URL` to match. You can also change `FORWARD_DB_PORT` if another MySQL instance is running locally.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2. For a fresh clone without `vendor/`, install the initial dependencies using the Laravel Sail bootstrap image. This provides `vendor/bin/sail` without installing PHP or Composer on the host:
 
-## License
+   ```bash
+   docker run --rm \
+     -u "$(id -u):$(id -g)" \
+     -v "$PWD:/var/www/html" \
+     -w /var/www/html \
+     laravelsail/php84-composer:latest \
+     composer install --no-interaction --ignore-platform-reqs
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+   Platform requirements are checked again inside the Sail runtime in the next step.
+
+3. Start the environment and prepare the application:
+
+   ```bash
+   ./vendor/bin/sail up -d
+   ./vendor/bin/sail composer install
+   ./vendor/bin/sail artisan key:generate
+   ./vendor/bin/sail artisan migrate --seed
+   ./vendor/bin/sail npm ci
+   ./vendor/bin/sail npm run dev
+   ```
+
+   Open `http://localhost` or the URL configured in `APP_URL`. Mailpit lets you inspect local emails at `http://localhost:8025`.
+
+4. To enable file uploads, set `CLOUDINARY_URL` in your `.env` using your account's configuration value. You can explore the catalog and admin panel without credentials, but uploads require a configured account. Do not add real credentials to `.env.example` or the repository.
+
+`DatabaseSeeder` creates sample data and two users only in the `local` or `development` environments. To explore the local admin panel, use `admin@wasipet.pe` with the factory password `password`. This account is created with a verified email and must not be used in a shared environment. Bank account numbers, payment receipts, and images in the seeders are examples and should be reviewed before any real use.
+
+To stop the environment:
+
+```bash
+./vendor/bin/sail down
+```
+
+## Build and tests
+
+```bash
+# Build the frontend
+./vendor/bin/sail npm run build
+
+# Run the existing test suite
+./vendor/bin/sail artisan test
+
+# Alternative defined in composer.json: clear configuration and run the suite
+./vendor/bin/sail composer test
+
+# Check PHP formatting without modifying files
+./vendor/bin/sail pint --test
+```
+
+`phpunit.xml` uses a separate MySQL database named `testing`, which Sail creates when initializing its volume. If an existing volume does not contain it, prepare that database and its permissions before running the suite. Tests using `RefreshDatabase` recreate its tables; always use a dedicated test database.
+
+The suite focuses on authentication, profiles, and admin access protection. Business logic coverage is limited: there is no comprehensive suite for adoptions, donations, Cloudinary uploads, or bingo generation. There is also no frontend test command defined in `package.json`.
+
+## Project status and known limitations
+
+The project retains its MVP scope. Before using real data, review age persistence in the admin pet forms (`age` versus `birth_date`), compatibility between configurable payment methods and the donation enum, sample assets on public pages, and dependency security advisories.

@@ -16,7 +16,7 @@ class DashboardController extends Controller
         return Inertia::render('Admin/Dashboard', [
             'totalPets' => Pet::count(),
             'pendingRequests' => AdoptionRequest::where('status', 'Pendiente')->count(),
-            'pendingDonations' => Donation::count(), // Temporary: count all until status column added
+            'pendingDonations' => Donation::count(),
         ]);
     }
 }
